@@ -1,0 +1,25 @@
+<mat-spinner *ngIf="isLoad"></mat-spinner>
+<mat-card *ngIf="!isLoad">
+  <form [formGroup]="dataForm" (ngSubmit)="onSavePost()">
+    <mat-form-field>
+      <input type="text" matInput placeholder="Title" formControlName="title">  
+      <mat-error *ngIf="dataForm.get('title').hasError('required') && dataForm.get('title').touched">Title is required</mat-error>
+      <mat-error *ngIf="dataForm.get('title').hasError('minlength') && dataForm.get('title').touched">Title is too short</mat-error>
+    </mat-form-field>
+    
+    <div>
+      <button (click)="filePicker.click()" mat-stroked-button type="button">Pick Image</button>
+      <input (change)="onUpload($event)" type="file" #filePicker>
+    </div>
+    <div class="image-preview" *ngIf="imagePreview && imagePreview !== '' && dataForm.get('image').valid">
+      <img [src]="imagePreview" [alt]="dataForm.get('image').value">
+    </div>
+    
+    <mat-form-field>
+      <textarea matInput placeholder="Content" formControlName="content"></textarea>
+      <mat-error *ngIf="dataForm.get('content').hasError('required') && dataForm.get('content').touched">Content is required</mat-error>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit" [disabled]="!dataForm.valid">Save Post</button>
+  </form>
+</mat-card>
