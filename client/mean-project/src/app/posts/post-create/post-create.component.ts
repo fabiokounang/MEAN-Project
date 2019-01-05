@@ -59,7 +59,6 @@ export class PostCreateComponent implements OnInit {
   }
 
   populateImage (image) {
-    console.log(image);
     this.imagePreview = image;
   }
 
@@ -86,13 +85,6 @@ export class PostCreateComponent implements OnInit {
         this.postService.addPost(objPost).subscribe((response: any) => {
           if (response.status) {
             this.dataForm.reset();
-            let objPost = {
-              id: response.data._id,
-              title: response.data.title,
-              content: response.data.content,
-              image: response.data.image
-            }
-            this.postService.postUpdated.next(objPost);
             this.isLoad = true;
             this.router.navigate(['/']);
           }
@@ -104,7 +96,8 @@ export class PostCreateComponent implements OnInit {
             id: this.idParam,
             title: this.dataForm.value.title,
             content: this.dataForm.value.content,
-            image: ''
+            image: '',
+            creator: null
           }
         } else {
           postData = new FormData();
@@ -116,17 +109,6 @@ export class PostCreateComponent implements OnInit {
         this.postService.updatePost(this.idParam, postData).subscribe((response: any) => {
           if (response.status) {
             this.dataForm.reset();
-            let objPost = {
-              id: response.data._id,
-              title: response.data.title,
-              content: response.data.content,
-              image: response.data.image
-            }
-            this.postService.posts.map((data) => {
-              if (data.id == objPost.id) {
-                data = objPost;
-              }
-            })
             this.postService.saveData(this.postService.posts);
             this.isLoad = true;
             this.router.navigate(['/']);

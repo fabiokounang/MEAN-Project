@@ -16,8 +16,9 @@ export class PostService {
     this.posts = posts;
   }
 
-  getPost () {
-    return this.http.get<{status: boolean, message: string, data: Post[]}>(this.apiString + 'api/posts');
+  getPost (limit: number, page: number) {
+    const queryParams = `?limit=${limit}&page=${page}`;
+    return this.http.get<{status: boolean, message: string, data: Post[]}>(this.apiString + 'api/posts' + queryParams);
   }
 
   getOnePost(id: string) {

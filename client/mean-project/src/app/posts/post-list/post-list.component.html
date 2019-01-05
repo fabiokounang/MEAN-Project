@@ -12,12 +12,12 @@
 
     <p>{{post.content}}</p>
 
-    <mat-action-row>
+    <mat-action-row  *ngIf="isAuthenticate && userId == post.creator">
       <a mat-button (click)="onEdit(post)" mat-button color="primary">EDIT</a>
       <button (click)="onDelete(post)" mat-button color="warn">DELETE</button>
     </mat-action-row>
   </mat-expansion-panel>
 </mat-accordion>
-<mat-paginator [pageSizeOptions]="pageOptions" [length]="totalPost" [pageSize]="postPerPage" (page)="onPageChange($event)"></mat-paginator>
+<mat-paginator *ngIf="posts.length > 0" [pageSizeOptions]="pageOptions" [length]="totalPost" [showFirstLastButtons]="true" [pageSize]="postPerPage" (page)="onPageChange($event)"></mat-paginator>
 
 <p class="mat-body-1 info-text" *ngIf="posts.length <= 0 && !isLoad">No Content Yet</p>

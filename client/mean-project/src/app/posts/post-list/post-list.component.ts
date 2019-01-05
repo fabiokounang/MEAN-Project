@@ -4,6 +4,8 @@ import { PostService } from '../post.service';
 import { Subscription } from 'rxjs';
 import { map } from "rxjs/operators";
 import { Router, ActivatedRoute } from '@angular/router';
+import { AuthService } from 'src/app/auth/auth.service';
+
 @Component({
   selector: 'app-post-list',
   templateUrl: './post-list.component.html',
@@ -14,37 +16,60 @@ export class PostListComponent implements OnInit, OnDestroy {
   posts: Post[] = [];
   subscription: Subscription;
   isLoad = false;
-  totalPost = 10;
+  totalPost = 0;
   pageOptions = [2, 4, 6, 10];
   postPerPage = 2;
+  currentPage = 1;
+  isAuthenticate: boolean = false;
+  userId: string = '';
+  subscriptionAuth: Subscription;
 
-  constructor (private postService: PostService, private router: Router, private route: ActivatedRoute) {}
+  constructor (
+    private postService: PostService, 
+    private router: Router,
+    private authService: AuthService
+  ) {}
   
   ngOnInit () {
-    this.isLoad = true;
-    this.postService.getPost()
-      .pipe(map((response :any) => {
-        return response.data.map((value) => {
-          return {
-            id: value._id,
-            title: value.title,
-            content: value.content,
-            image: value.image
-          }
-        })
-      })).subscribe((transformPost: any) => {
+    this.userId = this.authService.userId;
+    this.isLoad = true; // untuk loader , true berarti muncul
+    this.getPostData();
+
+    this.subscription = this.postService.postUpdated.subscribe((data) => {
+      this.posts.push(data);
+    })
+
+    this.isAuthenticate = this.authService.isAuthenticate;
+    this.subscriptionAuth = this.authService.authListener.subscribe((condition) => {
+      this.isAuthenticate = condition;
+      this.userId = this.authService.userId;
+    })
+  }
+
+  getPostData () {
+    this.postService.getPost(this.postPerPage, this.currentPage).pipe(map((response :any) => { // getPost api dengan map response nya (hanya id saja yang diubah, dari _id jadi id)
+      if (response.total) {
+        this.totalPost = response.total;
+      }
+      return response.data.map((value) => {
+        return {
+          id: value._id,
+          title: value.title,
+          content: value.content,
+          image: value.image,
+          creator: value.creator
+        }
+      })
+    })).subscribe((transformPost: any) => { // subscribe transformPost
       if (transformPost) {
         this.posts = transformPost;
+        console.log(this.posts);
         this.postService.saveData(this.posts);
         this.isLoad = false;
       } else {
         console.log(transformPost, 'error')
       }
     });
-
-    this.subscription = this.postService.postUpdated.subscribe((data) => {
-      this.posts.push(data);
-    })
   }
 
   onDelete (post) {
@@ -52,6 +77,8 @@ export class PostListComponent implements OnInit, OnDestroy {
       if (response.data) {
         const updatedPost = this.posts.filter(post => post.id !== response.data);
         this.posts = updatedPost;
+        this.totalPost--;
+        // this.getPostData();
       } else {
         console.log(response, 'error');
       }
@@ -63,12 +90,14 @@ export class PostListComponent implements OnInit, OnDestroy {
   }
 
   onPageChange (event) {
-    console.log(event);
+    this.currentPage = event.pageIndex + 1;
+    this.postPerPage = event.pageSize;
+    this.isLoad = true; // untuk loader , true berarti muncul
+    this.getPostData();
   }
 
   ngOnDestroy () {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
+    this.subscription.unsubscribe();
+    this.subscriptionAuth.unsubscribe();
   }
 }
