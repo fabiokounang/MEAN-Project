@@ -63,7 +63,6 @@ export class PostListComponent implements OnInit, OnDestroy {
     })).subscribe((transformPost: any) => { // subscribe transformPost
       if (transformPost) {
         this.posts = transformPost;
-        console.log(this.posts);
         this.postService.saveData(this.posts);
         this.isLoad = false;
       } else {
@@ -73,15 +72,19 @@ export class PostListComponent implements OnInit, OnDestroy {
   }
 
   onDelete (post) {
+    this.isLoad = true;
     this.postService.deletePost(post).subscribe((response: any) => {
       if (response.data) {
         const updatedPost = this.posts.filter(post => post.id !== response.data);
         this.posts = updatedPost;
         this.totalPost--;
+        this.isLoad = false;
         // this.getPostData();
       } else {
         console.log(response, 'error');
       }
+    }, (err) => {
+      this.isLoad = false;
     })
   }
 

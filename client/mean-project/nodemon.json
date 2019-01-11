@@ -1,0 +1,6 @@
+{
+  "env": {
+    "MONGO_ATLAS_PW": "fabio",
+    "JWT_KEY": "RAON_LEE_FEGGY_WIGUNA_KEI_TAKEBUCHI"
+  }
+}

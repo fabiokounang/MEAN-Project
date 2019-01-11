@@ -3,13 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { AuthData } from './auth.model';
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class AuthService {
-  apiString = 'http://localhost:3000/';
+  apiString = environment.apiUrl;
   private token: string = '';
   authListener = new Subject<boolean>();
   isAuthenticate = false;
@@ -74,7 +75,7 @@ export class AuthService {
     this.authListener.next(false);
     clearTimeout(this.timer);
     this.clearAuthData();
-    this.router.navigate(['/login']);
+    this.router.navigate(['auth/login']);
   }
 
   saveAuthData (token: string, expirationDate: Date, userId: string) { // SAVE TOKEN AND EXPIRATION DATE TO LOCALSTORAGE

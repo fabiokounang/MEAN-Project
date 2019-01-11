@@ -2,12 +2,13 @@ import { Post } from './post.model';
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { HttpClient, HttpRequest } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
 
 export class PostService {
-  apiString = 'http://localhost:3000/';
+  apiString = environment.apiUrl;
   posts: Post[] = [];
   postUpdated = new Subject<Post>();
   constructor (private http: HttpClient) {}

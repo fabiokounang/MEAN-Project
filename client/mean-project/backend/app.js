@@ -6,7 +6,7 @@ const path = require('path');
 const postRoutes = require('./routes/posts');
 const userRoutes = require('./routes/user');
 
-mongoose.connect('mongodb+srv://fabio:fabio@mean-kjgds.mongodb.net/MEAN?retryWrites=true', { useNewUrlParser: true }).then(() => {
+mongoose.connect('mongodb+srv://fabio:' + process.env.MONGO_ATLAS_PW + '@mean-kjgds.mongodb.net/MEAN?retryWrites=true', { useNewUrlParser: true }).then(() => {
   console.log('CONNECTED TO DATABASE');
 }).catch((err) => {
   console.log('CONNECTION FAILED', err);
